@@ -22,6 +22,12 @@ class TestHtmlNode(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             html_node = HtmlNode(tag="a", value="This is a value", children=["HTML Node", "HTML Node", "HTML Node"], props={"href": "https://www.google.com"})
             self.assertRegex(NotImplementedError, html_node.to_html())
+    
+    def test_props_to_html(self):
+        html_node = HtmlNode(tag="a", value="This is a value", children=["HTML Node", "HTML Node", "HTML Node"], props={"href": "https://www.google.com"})
+        html_node_two = HtmlNode(tag="a", value="This is a value", children=["HTML Node", "HTML Node", "HTML Node"], props={"href": "https://www.google.com", "target": "_blank"})
+        self.assertEqual(html_node.props_to_html(), 'href="https://www.google.com"')
+        self.assertEqual(html_node_two.props_to_html(), 'href="https://www.google.com" target="_blank"')
 
 if __name__ == "__main__":
     unittest.main() 
