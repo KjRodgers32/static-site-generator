@@ -24,10 +24,8 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node1, node2)
     
     def test_eq_missing_requirement(self):
-        with self.assertRaises(Exception) as type_error:
-            node1 = TextNode("bold", "google.com")
-        print(type_error.exception.args)
-        self.assertRegex(type_error.exception.args[0], "missing 1 required positional argument")
+        with self.assertRaises(TypeError):
+            self.assertRaises(TypeError, TextNode("bold", "google.com"))
 
     def test_repr(self):
         node = TextNode("This is a text node", "bold", "google.com")
