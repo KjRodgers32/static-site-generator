@@ -9,6 +9,8 @@ class HtmlNode:
         raise NotImplementedError
     
     def props_to_html(self):
+        if self.props == None:
+            return ''
         string = ''
         for k, v in self.props.items():
             string += f' {k}="{v}"'
