@@ -10,7 +10,6 @@ class HtmlNode:
     
     def props_to_html(self):
         string = ''
-        length_of_props = len(self.props)
         for k, v in self.props.items():
             string += f' {k}="{v}"'
         return string
