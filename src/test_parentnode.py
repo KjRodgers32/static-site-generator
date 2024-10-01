@@ -31,15 +31,35 @@ class TestParentNode(unittest.TestCase):
                 )
         self.assertEqual("<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>", parent_node.to_html())
 
-    def test_to_html_with_prop(self):
-        parent_node = ParentNode("p",
+    def test_to_html_with_prop_and_nested_parent(self):
+        parent_node = ParentNode("div", 
+                    [
+                    ParentNode("p",
                     [
                         LeafNode("b", "Bold text"),
                         LeafNode("a", "Click This", {"href": "google.com"}),
                         LeafNode(None, "Normal text"),
                         LeafNode("i", "italic text"),
                         LeafNode(None, "Normal text"),
-                    ],
-                )
-        self.assertEqual('<p><b>Bold text</b><a href="google.com">Click This</a>Normal text<i>italic text</i>Normal text</p>', parent_node.to_html())
+                    ]
+                )])
+        self.assertEqual('<div><p><b>Bold text</b><a href="google.com">Click This</a>Normal text<i>italic text</i>Normal text</p></div>', parent_node.to_html())
+
+
+    def test_to_html_with_prop_and_multiple_nested_parent(self):
+        parent_node = ParentNode("div", 
+                    [
+                    ParentNode("div",
+                    [ 
+                    ParentNode("p",
+                    [
+                        LeafNode("b", "Bold text"),
+                        LeafNode("a", "Click This", {"href": "google.com"}),
+                        LeafNode(None, "Normal text"),
+                        LeafNode("i", "italic text"),
+                        LeafNode(None, "Normal text"),
+                    ]
+                )], {"class": "this-is-a-class"})])
+        print(parent_node)
+        self.assertEqual('<div><div class="this-is-a-class"><p><b>Bold text</b><a href="google.com">Click This</a>Normal text<i>italic text</i>Normal text</p></div></div>', parent_node.to_html())
 
