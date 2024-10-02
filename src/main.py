@@ -22,9 +22,11 @@ def split_nodes_delimiter(old_nodes ,delimiter, text_type):
     nodes_array = []
     for node in old_nodes:
         string_array = node.text.split(delimiter)
-        nodes_array.append(TextNode(string_array[0], "text"))
+        if string_array[0] != '':
+            nodes_array.append(TextNode(string_array[0], "text"))
         nodes_array.append(TextNode(string_array[1], text_type))
-        nodes_array.append(TextNode(string_array[2], "text"))
+        if string_array[2] != '':
+            nodes_array.append(TextNode(string_array[2], "text"))
     return nodes_array
 
 def main():
