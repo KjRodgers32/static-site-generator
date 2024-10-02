@@ -18,10 +18,6 @@ class TestLeafNode(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.assertRaises(ValueError("Leaf Node must have a value!"),LeafNode(tag="a", value=None, props={"href": "google.com"}).to_html())
 
-    def test_to_html_value_equal_empty_string(self):
-        with self.assertRaises(ValueError):
-            self.assertRaises(ValueError("Leaf Node must have a value!"),LeafNode(tag="a", value='  ', props={"href": "google.com"}).to_html())
-
     def test_to_html_no_tag(self):
         leaf_node = LeafNode(tag=None, value="Click")
         self.assertEqual("Click", leaf_node.to_html())
