@@ -10,9 +10,10 @@ class ParentNode(HtmlNode):
         if self.children == None:
             raise ValueError("Parent Node must have children")
 
-        leaf_string = ''
         for leaf_node in self.children:
-            leaf_string += leaf_node.to_html()
+            leaf_string = '' + leaf_node.to_html()
         return f"<{self.tag}>{leaf_string}</{self.tag}>"
 
+    def __repr__(self):
+        return f"ParentNode(tag={self.tag}, value={self.value}, children={self.children}, props={self.props})"
 

@@ -60,6 +60,5 @@ class TestParentNode(unittest.TestCase):
                         LeafNode(None, "Normal text"),
                     ]
                 )], {"class": "this-is-a-class"})])
-        print(parent_node)
         self.assertEqual('<div><div class="this-is-a-class"><p><b>Bold text</b><a href="google.com">Click This</a>Normal text<i>italic text</i>Normal text</p></div></div>', parent_node.to_html())
 
