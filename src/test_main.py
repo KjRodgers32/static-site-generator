@@ -38,9 +38,29 @@ class TestMainFunctions(unittest.TestCase):
             text_node = TextNode("My name is Kevin", "invlaid-type", "kevin.com")
             self.assertRaises(Exception, text_node_to_html_node(text_node))
     
-    def test_split_nodes_delimiter(self):
+    def test_split_nodes_delimiter_code(self):
         node = TextNode("This is text with a `code block` word", "text")
         self.assertEqual([TextNode("This is text with a ", "text"),TextNode("code block", "code"),TextNode(" word", "text")], split_nodes_delimiter([node], "`", "code"))
+
+    def test_split_nodes_delimiter_bold(self):
+        node = TextNode("This is text with a **bolded phrase** in the middle", "bold")
+        self.assertEqual([TextNode("This is text with a ", "text"),TextNode("bolded phrase", "bold"),TextNode(" in the middle", "text")], split_nodes_delimiter([node], "**", "bold"))
+
+    def test_split_nodes_delimiter_italics(self):
+        node = TextNode("This is an *italic* and cool word.", "italic")
+        self.assertEqual([TextNode("This is an ", "text"),TextNode("italic", "italic"),TextNode(" and cool word.", "text")], split_nodes_delimiter([node], "*", "italic"))
+    
+    def test_split_nodes_delimiter_at_begining(self):
+        node = TextNode("**This is bold** from the very start", "bold")
+        self.assertEqual([TextNode("This is bold", "bold"),TextNode(" from the very start", "text")], split_nodes_delimiter([node], "**", "bold"))
+    
+    def test_split_nodes_delimiter_at_end(self):
+        node = TextNode("The code is at the very end: `code block`", "code")
+        self.assertEqual([TextNode("The code is at the very end: ", "text"),TextNode("code block", "code")], split_nodes_delimiter([node], "`", "code"))
+    
+    def test_split_nodes_delimiter_the_entire_string(self):
+        node = TextNode("*This entire line is italics*", "italic")
+        self.assertEqual([TextNode("This entire line is italics", "italic")],split_nodes_delimiter([node], "*", "italic"))
 
 if __name__ == '__main__':
     unittest.main()
