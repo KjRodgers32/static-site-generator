@@ -33,5 +33,10 @@ class TestMainFunctions(unittest.TestCase):
         leaf_node = text_node_to_html_node(text_node)
         self.assertEqual('<img src="kevin.com" alt="My name is Kevin"></img>', leaf_node.to_html())
 
+    def test_text_node_to_html_node_invalid(self):
+        with self.assertRaises(Exception):
+            text_node = TextNode("My name is Kevin", "invlaid-type", "kevin.com")
+            self.assertRaises(Exception, text_node_to_html_node(text_node))
+
 if __name__ == '__main__':
     unittest.main()
