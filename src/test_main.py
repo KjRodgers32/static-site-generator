@@ -37,6 +37,10 @@ class TestMainFunctions(unittest.TestCase):
         with self.assertRaises(Exception):
             text_node = TextNode("My name is Kevin", "invlaid-type", "kevin.com")
             self.assertRaises(Exception, text_node_to_html_node(text_node))
+    
+    def test_split_nodes_delimiter(self):
+        node = TextNode("This is text with a `code block` word", "text")
+        self.assertEqual([TextNode("This is text with a ", "text"),TextNode("code block", "code"),TextNode(" word", "text")], split_nodes_delimiter([node], "`", "code"))
 
 if __name__ == '__main__':
     unittest.main()
