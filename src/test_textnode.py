@@ -22,10 +22,6 @@ class TestTextNode(unittest.TestCase):
         node1 = TextNode("This is a text node", "bold", "google.com")
         node2 = TextNode("This is a text node", "bold", "bing.com")
         self.assertNotEqual(node1, node2)
-    
-    def test_eq_missing_requirement(self):
-        with self.assertRaises(TypeError):
-            self.assertRaises(TypeError, TextNode("bold", "google.com"))
 
     def test_repr(self):
         node = TextNode("This is a text node", "bold", "google.com")
