@@ -61,6 +61,14 @@ class TestMainFunctions(unittest.TestCase):
     def test_split_nodes_delimiter_the_entire_string(self):
         node = TextNode("*This entire line is italics*", "italic")
         self.assertEqual([TextNode("This entire line is italics", "italic")],split_nodes_delimiter([node], "*", "italic"))
+    
+    def test_extract_markdown_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertEqual([("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")], extract_markdown_images(text))
+
+    def test_extract_markdown_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        self.assertEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], extract_markdown_links(text))
 
 if __name__ == '__main__':
     unittest.main()
