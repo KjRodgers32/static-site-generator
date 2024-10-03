@@ -28,6 +28,7 @@ def split_nodes_delimiter(old_nodes ,delimiter, text_type):
         nodes_array.append(TextNode(string_array[1], text_type))
         if string_array[2] != '':
             nodes_array.append(TextNode(string_array[2], "text"))
+
     return nodes_array
 
 def extract_markdown_images(text):
@@ -59,23 +60,57 @@ def extract_markdown_links(text):
     return markdown_array
 
 def split_nodes_link(old_nodes):
-    for node in old_nodes:
-        print(re.split(r"\[(.*?)\]\(.*?\)", node.text))
-        print(extract_markdown_links(node.text))
+    text_nodes = []
 
+    for node in old_nodes:
+        text_split_array = re.split(r"\[(.*?)\]\(.*?\)", node.text)
+        link_split_array = extract_markdown_links(node.text)
+
+        for string in text_split_array:
+            i = 0
+            while i != len(link_split_array):
+                if string == link_split_array[i][0]:
+                    text_nodes.append(TextNode(string, "link", link_split_array[i][1])) 
+                    break
+                if string != link_split_array[i][0]:
+                    i += 1
+            if string.strip() != '' and i == len(link_split_array):
+                text_nodes.append(TextNode(string, "text"))
+
+    return text_nodes
 
 def split_nodes_image(old_nodes):
-    for node in old_nodes:
-        print(re.split(r"!\[(.*?)\]\(.*?\)", node.text))
-        print(extract_markdown_images(node.text))
+    text_nodes = []
 
+    for node in old_nodes:
+        text_split_array = re.split(r"!\[(.*?)\]\(.*?\)", node.text)
+        image_split_array = extract_markdown_images(node.text)
+
+        for string in text_split_array:
+            i = 0
+            while i != len(image_split_array):
+                if string == image_split_array[i][0]:
+                    text_nodes.append(TextNode(string, "link", image_split_array[i][1])) 
+                    break
+                if string != image_split_array[i][0]:
+                    i += 1
+            if string.strip() != '' and i == len(image_split_array):
+                text_nodes.append(TextNode(string, "text"))
+    
+    return text_nodes
 
 
 def main():
-    split_nodes_link([TextNode(
+    print(split_nodes_link([TextNode(
     "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
     "text",
-)])
+)]))
+    
+    print(split_nodes_image([TextNode(
+        "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
+        "text"
+    )]))
 
 
-main()
+if __name__ == "__main__":
+    main()
