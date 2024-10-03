@@ -32,12 +32,50 @@ def split_nodes_delimiter(old_nodes ,delimiter, text_type):
 
 def extract_markdown_images(text):
     alt_text_pattern = r"!\[(.*?)\]"
-    print(re.findall(alt_text_pattern, text))
+    image_link_pattern = r"\((.*?)\)"
+
+    alt_text_array = re.findall(alt_text_pattern, text)
+    image_link_array = re.findall(image_link_pattern, text)
+
+    markdown_array = []
+
+    for i in range(len(alt_text_array)):
+        markdown_array.append((alt_text_array[i], image_link_array[i]))
+
+    return markdown_array
 
 def extract_markdown_links(text):
-    pass
+    alt_text_pattern = r"\[(.*?)\]"
+    link_pattern = r"\((.*?)\)"
+
+    alt_text_array = re.findall(alt_text_pattern, text)
+    link_array = re.findall(link_pattern, text)
+
+    markdown_array = []
+
+    for i in range(len(alt_text_array)):
+        markdown_array.append((alt_text_array[i], link_array[i]))
+
+    return markdown_array
+
+def split_nodes_link(old_nodes):
+    for node in old_nodes:
+        print(re.split(r"\[(.*?)\]\(.*?\)", node.text))
+        print(extract_markdown_links(node.text))
+
+
+def split_nodes_image(old_nodes):
+    for node in old_nodes:
+        print(re.split(r"!\[(.*?)\]\(.*?\)", node.text))
+        print(extract_markdown_images(node.text))
+
+
 
 def main():
-    extract_markdown_images("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)")
+    split_nodes_link([TextNode(
+    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+    "text",
+)])
+
 
 main()
