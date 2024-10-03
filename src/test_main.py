@@ -61,7 +61,7 @@ class TestMainFunctions(unittest.TestCase):
     def test_split_nodes_delimiter_the_entire_string(self):
         node = TextNode("*This entire line is italics*", "italic")
         self.assertEqual([TextNode("This entire line is italics", "italic")],split_nodes_delimiter([node], "*", "italic"))
-    
+
     def test_extract_markdown_images(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
         self.assertEqual([("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")], extract_markdown_images(text))
@@ -69,6 +69,55 @@ class TestMainFunctions(unittest.TestCase):
     def test_extract_markdown_links(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
         self.assertEqual([("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")], extract_markdown_links(text))
+    
+    def test_split_nodes_link_text_at_the_begining_and_in_between(self):
+        text = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)", "text")
+        self.assertEqual([TextNode("This is text with a link ", "text", None), 
+                          TextNode("to boot dev", "link", "https://www.boot.dev"),
+                          TextNode(" and ", "text", None), TextNode("to youtube", "link", "https://www.youtube.com/@bootdotdev")], split_nodes_link([text]))
+
+    def test_split_nodes_link_everything_is_a_link(self):
+        text = TextNode("[to boot dev](https://www.boot.dev) [to youtube](https://www.youtube.com/@bootdotdev)", "text")
+        self.assertEqual([TextNode("to boot dev", "link", "https://www.boot.dev"),
+                          TextNode("to youtube", "link", "https://www.youtube.com/@bootdotdev")], split_nodes_link([text]))
+
+    def test_split_nodes_link_text_in_the_middle(self):
+        text = TextNode("[to boot dev](https://www.boot.dev) just some text in the middle [to youtube](https://www.youtube.com/@bootdotdev)", "text")
+        self.assertEqual([TextNode("to boot dev", "link", "https://www.boot.dev"),
+                          TextNode(" just some text in the middle ", "text"),
+                          TextNode("to youtube", "link", "https://www.youtube.com/@bootdotdev")], split_nodes_link([text]))
+
+    def test_split_nodes_link_text_at_the_end(self):
+        text = TextNode("[to boot dev](https://www.boot.dev) [to youtube](https://www.youtube.com/@bootdotdev) just some text at the end", "text")
+        self.assertEqual([TextNode("to boot dev", "link", "https://www.boot.dev"),
+                          TextNode("to youtube", "link", "https://www.youtube.com/@bootdotdev"),
+                          TextNode(" just some text at the end", "text")], split_nodes_link([text]))
+
+    def test_split_nodes_image_text_at_the_begining_and_in_between(self):
+        text = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
+        self.assertEqual([TextNode("This is text with a ", "text", None), 
+                          TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode(" and ", "text", None), 
+                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
+
+    def test_split_nodes_image_everything_is_a_link(self):
+        text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
+        self.assertEqual([TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
+
+    def test_split_nodes_image_text_in_the_middle(self):
+        text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) just some text in the middle ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
+        self.assertEqual([TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode(" just some text in the middle ", "text"),
+                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
+
+    def test_split_nodes_image_text_in_the_middle(self):
+        text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) just some text at the end", "text")
+        self.assertEqual([TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg"),
+                          TextNode(" just some text at the end", "text")], split_nodes_image([text]))
+
+
 
 if __name__ == '__main__':
     unittest.main()
