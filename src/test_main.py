@@ -96,26 +96,59 @@ class TestMainFunctions(unittest.TestCase):
     def test_split_nodes_image_text_at_the_begining_and_in_between(self):
         text = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
         self.assertEqual([TextNode("This is text with a ", "text", None), 
-                          TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
                           TextNode(" and ", "text", None), 
-                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
+                          TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
 
     def test_split_nodes_image_everything_is_a_link(self):
         text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
-        self.assertEqual([TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
-                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
+        self.assertEqual([TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
 
     def test_split_nodes_image_text_in_the_middle(self):
         text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) just some text in the middle ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
-        self.assertEqual([TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
+        self.assertEqual([TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
                           TextNode(" just some text in the middle ", "text"),
-                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
+                          TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
 
     def test_split_nodes_image_text_in_the_middle(self):
         text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) just some text at the end", "text")
-        self.assertEqual([TextNode("rick roll", "link", "https://i.imgur.com/aKaOqIh.gif"),
-                          TextNode("obi wan", "link", "https://i.imgur.com/fJRm4Vk.jpeg"),
+        self.assertEqual([TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg"),
                           TextNode(" just some text at the end", "text")], split_nodes_image([text]))
+    
+    def test_text_to_textnodes(self):
+        text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        self.assertEqual([
+                            TextNode("This is ", "text"),
+                            TextNode("text", "bold"),
+                            TextNode(" with an ", "text"),
+                            TextNode("italic", "italic"),
+                            TextNode(" word and a ", "text"),
+                            TextNode("code block", "code"),
+                            TextNode(" and an ", "text"),
+                            TextNode("obi wan image", "image", "https://i.imgur.com/fJRm4Vk.jpeg"),
+                            TextNode(" and a ", "text"),
+                            TextNode("link", "link", "https://boot.dev"),
+                        ], text_to_textnodes(text))
+
+    
+    def test_text_to_textnodes_random_order(self):
+        text = "Check out this ![cool image](https://i.imgur.com/fJRm4Vk.jpeg), followed by a `code example`, some *italicized words*, and finally a **bold statement** with a [useful link](https://boot.dev)."
+        self.assertEqual([
+                            TextNode("Check out this ", "text"),
+                            TextNode("cool image", "image", "https://i.imgur.com/fJRm4Vk.jpeg"),
+                            TextNode(", followed by a ", "text"),
+                            TextNode("code example", "code"),
+                            TextNode(", some ", "text"),
+                            TextNode("italicized words", "italic"),
+                            TextNode(", and finally a ", "text"),
+                            TextNode("bold statement", "bold"),
+                            TextNode("with a ", "text"),
+                            TextNode("useful link", "link", "https://boot.dev"),
+                            TextNode(".", "text")
+                        ], text_to_textnodes(text))
+
 
 
 
