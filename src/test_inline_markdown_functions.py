@@ -114,7 +114,7 @@ class TestInlineMarkdownFunctions(unittest.TestCase):
                           TextNode(" just some text in the middle ", "text"),
                           TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
 
-    def test_split_nodes_image_text_in_the_middle(self):
+    def test_split_nodes_image_text_at_the_end(self):
         text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) just some text at the end", "text")
         self.assertEqual([TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
                           TextNode(" ", "text"),
@@ -152,8 +152,6 @@ class TestInlineMarkdownFunctions(unittest.TestCase):
                             TextNode("useful link", "link", "https://boot.dev"),
                             TextNode(".", "text")
                         ], text_to_textnodes(text))
-
-
 
 
 if __name__ == '__main__':
