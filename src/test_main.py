@@ -43,23 +43,23 @@ class TestMainFunctions(unittest.TestCase):
         self.assertEqual([TextNode("This is text with a ", "text"),TextNode("code block", "code"),TextNode(" word", "text")], split_nodes_delimiter([node], "`", "code"))
 
     def test_split_nodes_delimiter_bold(self):
-        node = TextNode("This is text with a **bolded phrase** in the middle", "bold")
+        node = TextNode("This is text with a **bolded phrase** in the middle", "text")
         self.assertEqual([TextNode("This is text with a ", "text"),TextNode("bolded phrase", "bold"),TextNode(" in the middle", "text")], split_nodes_delimiter([node], "**", "bold"))
 
     def test_split_nodes_delimiter_italics(self):
-        node = TextNode("This is an *italic* and cool word.", "italic")
+        node = TextNode("This is an *italic* and cool word.", "text")
         self.assertEqual([TextNode("This is an ", "text"),TextNode("italic", "italic"),TextNode(" and cool word.", "text")], split_nodes_delimiter([node], "*", "italic"))
     
     def test_split_nodes_delimiter_at_begining(self):
-        node = TextNode("**This is bold** from the very start", "bold")
+        node = TextNode("**This is bold** from the very start", "text")
         self.assertEqual([TextNode("This is bold", "bold"),TextNode(" from the very start", "text")], split_nodes_delimiter([node], "**", "bold"))
     
     def test_split_nodes_delimiter_at_end(self):
-        node = TextNode("The code is at the very end: `code block`", "code")
+        node = TextNode("The code is at the very end: `code block`", "text")
         self.assertEqual([TextNode("The code is at the very end: ", "text"),TextNode("code block", "code")], split_nodes_delimiter([node], "`", "code"))
     
     def test_split_nodes_delimiter_the_entire_string(self):
-        node = TextNode("*This entire line is italics*", "italic")
+        node = TextNode("*This entire line is italics*", "text")
         self.assertEqual([TextNode("This entire line is italics", "italic")],split_nodes_delimiter([node], "*", "italic"))
 
     def test_extract_markdown_images(self):
@@ -79,6 +79,7 @@ class TestMainFunctions(unittest.TestCase):
     def test_split_nodes_link_everything_is_a_link(self):
         text = TextNode("[to boot dev](https://www.boot.dev) [to youtube](https://www.youtube.com/@bootdotdev)", "text")
         self.assertEqual([TextNode("to boot dev", "link", "https://www.boot.dev"),
+                          TextNode(" ", "text"),
                           TextNode("to youtube", "link", "https://www.youtube.com/@bootdotdev")], split_nodes_link([text]))
 
     def test_split_nodes_link_text_in_the_middle(self):
@@ -90,6 +91,7 @@ class TestMainFunctions(unittest.TestCase):
     def test_split_nodes_link_text_at_the_end(self):
         text = TextNode("[to boot dev](https://www.boot.dev) [to youtube](https://www.youtube.com/@bootdotdev) just some text at the end", "text")
         self.assertEqual([TextNode("to boot dev", "link", "https://www.boot.dev"),
+                          TextNode(" ", "text"),
                           TextNode("to youtube", "link", "https://www.youtube.com/@bootdotdev"),
                           TextNode(" just some text at the end", "text")], split_nodes_link([text]))
 
@@ -100,9 +102,10 @@ class TestMainFunctions(unittest.TestCase):
                           TextNode(" and ", "text", None), 
                           TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
 
-    def test_split_nodes_image_everything_is_a_link(self):
+    def test_split_nodes_image_everything_is_a_image(self):
         text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", "text")
         self.assertEqual([TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode(" ", "text"),
                           TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg")], split_nodes_image([text]))
 
     def test_split_nodes_image_text_in_the_middle(self):
@@ -114,6 +117,7 @@ class TestMainFunctions(unittest.TestCase):
     def test_split_nodes_image_text_in_the_middle(self):
         text = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) just some text at the end", "text")
         self.assertEqual([TextNode("rick roll", "image", "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode(" ", "text"),
                           TextNode("obi wan", "image", "https://i.imgur.com/fJRm4Vk.jpeg"),
                           TextNode(" just some text at the end", "text")], split_nodes_image([text]))
     
@@ -144,7 +148,7 @@ class TestMainFunctions(unittest.TestCase):
                             TextNode("italicized words", "italic"),
                             TextNode(", and finally a ", "text"),
                             TextNode("bold statement", "bold"),
-                            TextNode("with a ", "text"),
+                            TextNode(" with a ", "text"),
                             TextNode("useful link", "link", "https://boot.dev"),
                             TextNode(".", "text")
                         ], text_to_textnodes(text))
