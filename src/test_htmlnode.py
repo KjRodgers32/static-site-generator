@@ -32,5 +32,6 @@ class TestHtmlNode(unittest.TestCase):
     def test_htmlnode_print(self):
         html_node = HtmlNode(tag="a", value="This is a value", children=["HTML Node", "HTML Node", "HTML Node"], props={"href": "https://www.google.com"})
         self.assertEqual(print('HtmlNode(tag=a, value=This is a value, children=["HTML Node", "HTML Node", "HTML Node"], props={"href": "https://www.google.com"})'), print(html_node))
+
 if __name__ == "__main__":
     unittest.main() 
