@@ -22,60 +22,59 @@ def text_node_to_html_node(text_node):
 def split_nodes_delimiter(old_nodes ,delimiter, text_type):
     nodes_array = []
     for node in old_nodes:
-        string_array = node.text.split(delimiter)
-        if string_array[0] != '':
-            nodes_array.append(TextNode(string_array[0], "text"))
-        nodes_array.append(TextNode(string_array[1], text_type))
-        if string_array[2] != '':
-            nodes_array.append(TextNode(string_array[2], "text"))
+        if node.text_type != "text":
+            nodes_array.append(node)
+            continue
+        split_nodes = []
+        splits = node.text.split(delimiter)
+        if len(splits) % 2 == 0:
+            raise ValueError("This is not a valid markdown expression")
+        for i in range(len(splits)):
+            if splits[i] == "":
+                continue
+            if i % 2 == 0:
+                split_nodes.append(TextNode(splits[i], "text"))
+            else:
+                split_nodes.append(TextNode(splits[i], text_type))
+        nodes_array.extend(split_nodes)
 
     return nodes_array
 
 def extract_markdown_images(text):
-    alt_text_pattern = r"!\[(.*?)\]"
-    image_link_pattern = r"\((.*?)\)"
-
-    alt_text_array = re.findall(alt_text_pattern, text)
-    image_link_array = re.findall(image_link_pattern, text)
-
-    markdown_array = []
-
-    for i in range(len(alt_text_array)):
-        markdown_array.append((alt_text_array[i], image_link_array[i]))
-
-    return markdown_array
+    pattern = r"!\[(.*?)\]\((.*?)\)"
+    matches = re.findall(pattern, text)
+    return matches
 
 def extract_markdown_links(text):
-    alt_text_pattern = r"\[(.*?)\]"
-    link_pattern = r"\((.*?)\)"
-
-    alt_text_array = re.findall(alt_text_pattern, text)
-    link_array = re.findall(link_pattern, text)
-
-    markdown_array = []
-
-    for i in range(len(alt_text_array)):
-        markdown_array.append((alt_text_array[i], link_array[i]))
-
-    return markdown_array
+    pattern = r"\[(.*?)\]\((.*?)\)"
+    matches = re.findall(pattern, text)
+    return matches
 
 def split_nodes_link(old_nodes):
     text_nodes = []
 
     for node in old_nodes:
-        text_split_array = re.split(r"\[(.*?)\]\(.*?\)", node.text)
-        link_split_array = extract_markdown_links(node.text)
+        if node.text_type != "text":
+            text_nodes.append(node)
+            continue
+        
+        text = node.text
+        links = extract_markdown_links(text)
 
-        for string in text_split_array:
-            i = 0
-            while i != len(link_split_array):
-                if string == link_split_array[i][0]:
-                    text_nodes.append(TextNode(string, "link", link_split_array[i][1])) 
-                    break
-                if string != link_split_array[i][0]:
-                    i += 1
-            if string.strip() != '' and i == len(link_split_array):
-                text_nodes.append(TextNode(string, "text"))
+        if len(links) == 0:
+            text_nodes.append(node)
+            continue
+
+        for link in links:
+            splits = text.split(f"[{link[0]}]({link[1]})", 1)
+            if len(splits) != 2:
+                raise ValueError("This is an invalid markdown expression")
+            if splits[0] != "":
+                text_nodes.append(TextNode(splits[0], "text"))
+            text_nodes.append(TextNode(link[0], "link", link[1]))
+            text = splits[1]
+        if text != "":
+            text_nodes.append(TextNode(text, "text"))
 
     return text_nodes
 
@@ -83,34 +82,42 @@ def split_nodes_image(old_nodes):
     text_nodes = []
 
     for node in old_nodes:
-        text_split_array = re.split(r"!\[(.*?)\]\(.*?\)", node.text)
-        image_split_array = extract_markdown_images(node.text)
+        if node.text_type != "text":
+            text_nodes.append(node)
+            continue
 
-        for string in text_split_array:
-            i = 0
-            while i != len(image_split_array):
-                if string == image_split_array[i][0]:
-                    text_nodes.append(TextNode(string, "link", image_split_array[i][1])) 
-                    break
-                if string != image_split_array[i][0]:
-                    i += 1
-            if string.strip() != '' and i == len(image_split_array):
-                text_nodes.append(TextNode(string, "text"))
-    
+        text = node.text
+        images = extract_markdown_images(text)
+
+        if len(images) == 0:
+            text_nodes.append(node)
+            continue
+
+        for image in images:
+            splits = text.split(f"![{image[0]}]({image[1]})", 1)
+            if len(splits) != 2:
+                raise ValueError("This is an invalid markdown expression")
+            if splits[0] != "":
+                text_nodes.append(TextNode(splits[0], "text"))
+            text_nodes.append(TextNode(image[0], "image", image[1]))
+            text = splits[1]
+        if text != "":
+            text_nodes.append(TextNode(text, "text"))
+
     return text_nodes
 
+def text_to_textnodes(text):
+    nodes = [TextNode(text, "text")]
+    nodes = split_nodes_delimiter(nodes, "**", "bold")
+    nodes = split_nodes_delimiter(nodes, "*", "italic")
+    nodes = split_nodes_delimiter(nodes, "`", "code")
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_link(nodes)
+    return nodes
 
 def main():
-    print(split_nodes_link([TextNode(
-    "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
-    "text",
-)]))
-    
-    print(split_nodes_image([TextNode(
-        "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)",
-        "text"
-    )]))
-
-
+    text = "Check out this ![cool image](https://i.imgur.com/fJRm4Vk.jpeg), followed by a `code example`, some *italicized words*, and finally a **bold statement** with a [useful link](https://boot.dev)."
+    text_two = TextNode("![rick roll](https://i.imgur.com/aKaOqIh.gif) ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg) just some text at the end", "text")
+    print(text_to_textnodes(text))
 if __name__ == "__main__":
     main()
