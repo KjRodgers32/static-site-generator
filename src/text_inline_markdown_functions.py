@@ -1,8 +1,8 @@
 import unittest
-from main import *
+from inline_markdown_functions import *
 from TextNode import TextNode
 
-class TestMainFunctions(unittest.TestCase):
+class TestInlineMarkdownFunctions(unittest.TestCase):
     def test_text_node_to_html_node_text(self):
         text_node = TextNode("My name is Kevin", "text", None)
         leaf_node = text_node_to_html_node(text_node)
