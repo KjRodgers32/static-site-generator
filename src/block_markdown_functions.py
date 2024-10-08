@@ -13,7 +13,10 @@ def block_to_block_type(markdown):
         return "quote"
     if markdown.startswith("*") or markdown.startswith("-"):
         return "unordered list"
-    if re.match(r"^[0-9]+.", markdown):
+    if re.match(r"^[0-9]+\.", markdown):
         return "ordered list"
     else:
         return "paragraph"
+
+def markdown_to_html_node(markdown):
+    pass
